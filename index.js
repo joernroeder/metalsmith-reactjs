@@ -1,4 +1,6 @@
 var debug = require('debug')('metalsmith-reactjs');
+var path = require('path');
+var fs = require('fs');
 var each = require('async').each;
 var extend = require('extend');
 var React = require('react');
@@ -21,6 +23,9 @@ function plugin( opts ){
     
     // 用 metalsmith.path() 才能保持正確的 working directory，不然會鎖在 module 工作目錄下
     var templateDir = opts.templateDir || metalsmith.path('./templates/');
+    if (!fs.exists(templateDir)) {
+      templateDir = path.resolve(process.cwd(), templateDir);
+    }
 
     // 內部一律返還一個 function 供外界操作
     return function template( files, metalsmith, done ){
@@ -87,7 +92,7 @@ function render( templateDir, templateName, dataPack, isStatic, cb ){
     console.log('\nrender: ', templateName/*, '\n>DataPack: ', dataPack*/ );
 
     // 取得指定的模板(jsx檔案)
-    var TempComp = React.createFactory( require( templateDir + templateName ) );
+    var TempComp = React.createFactory( require( path.join(templateDir, templateName) ) );
 
     // 餵資料到元件模板內讓它繪出
     var temp = new TempComp( dataPack );
