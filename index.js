@@ -101,5 +101,5 @@ function render( templateDir, templateName, dataPack, isStatic, cb ){
         str = React.renderToString( temp );
     }
 
-    cb( null, str );
+    cb( null, '<!doctype html>' + str );
 }
