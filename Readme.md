@@ -37,6 +37,9 @@ When set to false, will use `React.renderToString()` to generate content string,
 ### templateDir
 Assign path to template folder, default is `./templates`.
 
+### container
+Assign a container template which will be rendered via `React.renderToStaticMarkup()` with a `markup` property containing the rendered page. 
+
 
 ## CLI Usage
 

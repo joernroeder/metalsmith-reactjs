@@ -18,6 +18,7 @@ function plugin( opts ){
     // 預設為 static，也就是不生成 data-react-id 資料
     // 但如果想操作 react component 的話，就要設為 false
     var staticPage = opts.staticPage;
+    var containerName = opts.container;
 
     if( staticPage==undefined ) staticPage = true;
     
@@ -68,7 +69,7 @@ function plugin( opts ){
           var templateName = data.template;
 
           // 操作早先自定義好的 render() function
-          render( templateDir, templateName, dataPack, staticPage, function(err, str){
+          render( templateDir, templateName, dataPack, staticPage, containerName, function(err, str){
             
             if (err) return done(err);
 
@@ -86,13 +87,19 @@ function plugin( opts ){
 }
 
 // 真正操作 jsx 元件並餵入資料的地方
-function render( templateDir, templateName, dataPack, isStatic, cb ){
+function render( templateDir, templateName, dataPack, isStatic, containerName, cb ){
 
 
     console.log('\nrender: ', templateName/*, '\n>DataPack: ', dataPack*/ );
 
     // 取得指定的模板(jsx檔案)
     var TempComp = React.createFactory( require( path.join(templateDir, templateName) ) );
+    var Container;
+
+    if (containerName) {
+      console.log(path.join(templateDir, containerName) );
+      Container = React.createFactory( require( path.join(templateDir, containerName) ) );
+    }
 
     // 餵資料到元件模板內讓它繪出
     var temp = new TempComp( dataPack );
@@ -100,11 +107,19 @@ function render( templateDir, templateName, dataPack, isStatic, cb ){
     var str;
 
     // 將 react 元件轉成 str
-    if( isStatic ){
+    if( isStatic ) {
         str = React.renderToStaticMarkup( temp );
     }else{
         str = React.renderToString( temp );
     }
 
+    dataPack.markup = str;
+
+    var containerTemp = new Container( dataPack );
+
+    if (Container) {
+      str = React.renderToStaticMarkup (containerTemp );
+    }
+    
     cb( null, '<!doctype html>' + str );
 }
