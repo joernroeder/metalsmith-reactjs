@@ -97,7 +97,6 @@ function render( templateDir, templateName, dataPack, isStatic, containerName, c
     var Container;
 
     if (containerName) {
-      console.log(path.join(templateDir, containerName) );
       Container = React.createFactory( require( path.join(templateDir, containerName) ) );
     }
 
